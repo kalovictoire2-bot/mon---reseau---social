@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!<!DOCTYPE html>
 <html>
 
 <head>
@@ -8,6 +8,7 @@
 <body>
 
 <h1>Mon Réseau Social</h1>
+
 <input id="nom" placeholder="Ton nom">
 <input id="message" placeholder="Écris un message">
 
@@ -15,7 +16,7 @@
 Publier
 </button>
 
-<p id="resultat"></p>
+<div id="resultat"></div>
 
 <script>
 
@@ -24,7 +25,7 @@ document.getElementById("resultat").innerHTML =
 localStorage.getItem("messages") || "";
 }
 
-window.onload = function() {
+window.onload = function () {
 afficherMessages();
 }
 
@@ -36,6 +37,11 @@ document.getElementById("nom").value;
 let message =
 document.getElementById("message").value;
 
+if (nom === "" || message === "") {
+alert("Remplis tous les champs");
+return;
+}
+
 let heure =
 new Date().toLocaleTimeString();
 
@@ -43,7 +49,10 @@ let texte =
 nom + " : " + message + " (" + heure + ")";
 
 document.getElementById("resultat").innerHTML +=
-"<p>" + texte + " <button onclick='like(this)'>👍</button> <span>0</span></p>";
+"<p>" +
+texte +
+" <button onclick='like(this)'>👍</button> " +
+"<span>0</span></p>";
 
 localStorage.setItem(
 "messages",
@@ -51,14 +60,23 @@ document.getElementById("resultat").innerHTML
 );
 
 document.getElementById("message").value = "";
+}
+
+function like(btn) {
+
+let span = btn.nextElementSibling;
+
+span.innerText =
+parseInt(span.innerText) + 1;
+
+localStorage.setItem(
+"messages",
+document.getElementById("resultat").innerHTML
+);
 
 }
 
 </script>
-function like(btn) {
-let span = btn.nextElementSibling;
-span.innerText = parseInt(span.innerText) + 1;
-}
 
 </body>
 </html>
