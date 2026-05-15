@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Mon Réseau Social</title>
+</head>
+
+<body>
+
+<h1>Mon Réseau Social</h1>
+<input id="nom" placeholder="Ton nom">
+<input id="message" placeholder="Écris un message">
+
+<button onclick="publier()">
+Publier
+</button>
+
+<p id="resultat"></p>
+
+<script>
+
+function afficherMessages() {
+document.getElementById("resultat").innerHTML =
+localStorage.getItem("messages") || "";
+}
+
+window.onload = function() {
+afficherMessages();
+}
+
+function publier() {
+
+let nom =
+document.getElementById("nom").value;
+
+let message =
+document.getElementById("message").value;
+
+let heure =
+new Date().toLocaleTimeString();
+
+let texte =
+nom + " : " + message + " (" + heure + ")";
+
+document.getElementById("resultat").innerHTML +=
+"<p>" + texte + "</p>";
+
+localStorage.setItem(
+"messages",
+document.getElementById("resultat").innerHTML
+);
+
+document.getElementById("message").value = "";
+
+}
+
+</script>
+
+</body>
+</html>
