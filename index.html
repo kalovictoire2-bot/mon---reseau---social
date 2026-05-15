@@ -43,7 +43,7 @@ let texte =
 nom + " : " + message + " (" + heure + ")";
 
 document.getElementById("resultat").innerHTML +=
-"<p>" + texte + "</p>";
+"<p>" + texte + " <button onclick='like(this)'>👍</button> <span>0</span></p>";
 
 localStorage.setItem(
 "messages",
@@ -55,6 +55,10 @@ document.getElementById("message").value = "";
 }
 
 </script>
+function like(btn) {
+let span = btn.nextElementSibling;
+span.innerText = parseInt(span.innerText) + 1;
+}
 
 </body>
 </html>
