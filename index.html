@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>MonApp Expert</title>
+<title>MonApp Chat Pro</title>
 
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
@@ -13,7 +13,7 @@
 body{
 margin:0;
 font-family:Arial;
-background:#f0f2f5;
+background:#1877f2;
 }
 
 #login{
@@ -22,27 +22,23 @@ display:flex;
 flex-direction:column;
 justify-content:center;
 align-items:center;
-background:#1877f2;
 color:white;
 }
 
-#app{display:none;}
+#app{
+display:none;
+background:#f0f2f5;
+min-height:100vh;
+}
 
-input{
+input,button{
 padding:10px;
 margin:5px;
 border:none;
 border-radius:20px;
-width:220px;
 }
 
-button{
-padding:10px 15px;
-border:none;
-border-radius:20px;
-cursor:pointer;
-font-weight:bold;
-}
+button{cursor:pointer;font-weight:bold;}
 
 .topbar{
 background:#1877f2;
@@ -52,51 +48,23 @@ display:flex;
 justify-content:space-between;
 }
 
-.page{display:none;}
-.show{display:block;}
-
 .box{
 background:white;
-margin:15px;
-padding:15px;
-border-radius:12px;
-}
-
-.friend{
-background:white;
-margin:10px 15px;
+margin:10px;
 padding:10px;
 border-radius:10px;
-display:flex;
-justify-content:space-between;
 }
 
 .chat{
-background:#e4e6eb;
-margin:8px 15px;
-padding:8px;
-border-radius:10px;
-}
-
-.nav{
-display:flex;
-justify-content:center;
-gap:10px;
 margin:10px;
+padding:10px;
+border-radius:10px;
+background:#e4e6eb;
 }
 
-.nav button{
-width:55px;
-height:55px;
-border-radius:50%;
-background:white;
-border:none;
-font-size:20px;
-}
-
-.active{
-background:#1877f2;
-color:white;
+.me{
+text-align:right;
+background:#cfe2ff;
 }
 
 </style>
@@ -106,12 +74,12 @@ color:white;
 
 <!-- LOGIN -->
 <div id="login">
-  <h2>MonApp Expert 🔐</h2>
+  <h2>MonApp Chat 💬</h2>
 
   <input id="email" placeholder="Email">
   <input id="password" type="password" placeholder="Mot de passe">
 
-  <button onclick="signup()">Créer</button>
+  <button onclick="signup()">Créer compte</button>
   <button onclick="login()">Connexion</button>
 </div>
 
@@ -119,40 +87,17 @@ color:white;
 <div id="app">
 
   <div class="topbar">
-    <div>MonApp Expert</div>
+    <div>MonApp Chat</div>
     <div id="me"></div>
   </div>
 
-  <div class="nav">
-    <button class="active" onclick="show('friends',event)">👥</button>
-    <button onclick="show('chat',event)">💬</button>
-    <button onclick="logout()">🚪</button>
+  <div class="box">
+    <input id="to" placeholder="Email du destinataire">
+    <input id="msg" placeholder="Message">
+    <button onclick="sendMsg()">Envoyer</button>
   </div>
 
-  <!-- FRIENDS -->
-  <div id="friends" class="page show">
-
-    <div class="box">
-      <input id="friendEmail" placeholder="Email ami">
-      <button onclick="sendRequest()">Ajouter ami</button>
-    </div>
-
-    <div id="friendList"></div>
-
-  </div>
-
-  <!-- CHAT -->
-  <div id="chat" class="page">
-
-    <div class="box">
-      <input id="to" placeholder="Envoyer à (email)">
-      <input id="msg" placeholder="Message">
-      <button onclick="sendMsg()">Envoyer</button>
-    </div>
-
-    <div id="messages"></div>
-
-  </div>
+  <div id="messages"></div>
 
 </div>
 
@@ -173,90 +118,57 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-let user=null;
+let user = null;
 
-/* AUTH */
+/* LOGIN */
 function signup(){
-let e=document.getElementById("email").value;
-let p=document.getElementById("password").value;
+let e=document.getElementById("email").value.trim();
+let p=document.getElementById("password").value.trim();
 
 auth.createUserWithEmailAndPassword(e,p)
-.then(u=>{user=u.user;enter();});
+.then(u=>{
+user=u.user;
+enterApp();
+})
+.catch(e=>alert(e.message));
 }
 
 function login(){
-let e=document.getElementById("email").value;
-let p=document.getElementById("password").value;
+let e=document.getElementById("email").value.trim();
+let p=document.getElementById("password").value.trim();
 
 auth.signInWithEmailAndPassword(e,p)
-.then(u=>{user=u.user;enter();});
+.then(u=>{
+user=u.user;
+enterApp();
+})
+.catch(e=>alert(e.message));
 }
 
-function enter(){
+/* ENTER */
+function enterApp(){
 document.getElementById("login").style.display="none";
 document.getElementById("app").style.display="block";
 
 document.getElementById("me").innerText="🟢 "+user.email;
 
-loadFriends();
 loadMessages();
 }
 
-/* NAV */
-function show(page,event){
-
-document.querySelectorAll(".page").forEach(p=>p.classList.remove("show"));
-document.getElementById(page).classList.add("show");
-
-document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
-event.target.classList.add("active");
+/* CHAT ID (2 users unique) */
+function chatId(a,b){
+return [a,b].sort().join("_");
 }
 
-/* FRIEND REQUEST */
-function sendRequest(){
-
-let email=document.getElementById("friendEmail").value;
-
-db.collection("friendRequests").add({
-from:user.email,
-to:email,
-status:"pending"
-});
-
-document.getElementById("friendEmail").value="";
-}
-
-/* LOAD FRIENDS */
-function loadFriends(){
-
-db.collection("friendRequests")
-.where("to","==",user.email)
-.onSnapshot(snap=>{
-
-let html="";
-
-snap.forEach(doc=>{
-let r=doc.data();
-
-html+=`
-<div class="friend">
-👤 ${r.from}
-</div>
-`;
-});
-
-document.getElementById("friendList").innerHTML=html;
-
-});
-}
-
-/* CHAT PRIVÉ */
+/* SEND MESSAGE */
 function sendMsg(){
 
-let to=document.getElementById("to").value;
-let text=document.getElementById("msg").value;
+let to=document.getElementById("to").value.trim();
+let text=document.getElementById("msg").value.trim();
 
-db.collection("chats").add({
+if(!to || !text) return;
+
+db.collection("messages").add({
 from:user.email,
 to:to,
 text:text,
@@ -266,10 +178,10 @@ time:Date.now()
 document.getElementById("msg").value="";
 }
 
-/* LOAD CHAT */
+/* LOAD MESSAGES */
 function loadMessages(){
 
-db.collection("chats")
+db.collection("messages")
 .orderBy("time")
 .onSnapshot(snap=>{
 
@@ -279,9 +191,10 @@ snap.forEach(doc=>{
 let m=doc.data();
 
 if(m.from===user.email || m.to===user.email){
+
 html+=`
-<div class="chat">
-<b>${m.from}</b> ➜ <b>${m.to}</b><br>
+<div class="chat ${m.from===user.email?'me':''}">
+<b>${m.from}</b><br>
 ${m.text}
 </div>
 `;
