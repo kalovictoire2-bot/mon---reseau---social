@@ -1,8 +1,52 @@
-<!<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 
 <head>
 <title>Mon Réseau Social</title>
+
+<style>
+body{
+background:#f0f2f5;
+font-family:Arial;
+padding:20px;
+}
+
+h1{
+color:#1877f2;
+text-align:center;
+}
+
+input{
+width:90%;
+padding:10px;
+margin:5px;
+border-radius:10px;
+border:1px solid gray;
+}
+
+button{
+padding:10px;
+border:none;
+border-radius:10px;
+background:#1877f2;
+color:white;
+margin-top:5px;
+}
+
+p{
+background:white;
+padding:10px;
+border-radius:10px;
+box-shadow:0 0 5px gray;
+}
+
+img{
+margin-top:10px;
+border-radius:10px;
+max-width:100%;
+}
+</style>
+
 </head>
 
 <body>
@@ -10,7 +54,10 @@
 <h1>Mon Réseau Social</h1>
 
 <input id="nom" placeholder="Ton nom">
+
 <input id="message" placeholder="Écris un message">
+
+<input type="file" id="photo">
 
 <button onclick="publier()">
 Publier
@@ -21,12 +68,16 @@ Publier
 <script>
 
 function afficherMessages() {
+
 document.getElementById("resultat").innerHTML =
 localStorage.getItem("messages") || "";
+
 }
 
 window.onload = function () {
+
 afficherMessages();
+
 }
 
 function publier() {
@@ -38,8 +89,11 @@ let message =
 document.getElementById("message").value;
 
 if (nom === "" || message === "") {
+
 alert("Remplis tous les champs");
+
 return;
+
 }
 
 let heure =
@@ -48,11 +102,29 @@ new Date().toLocaleTimeString();
 let texte =
 nom + " : " + message + " (" + heure + ")";
 
+let photo =
+document.getElementById("photo").files[0];
+
+let imageHTML = "";
+
+if(photo){
+
+imageHTML =
+"<br><img src='" +
+URL.createObjectURL(photo) +
+"' width='200'>";
+
+}
+
 document.getElementById("resultat").innerHTML +=
+
 "<p>" +
 texte +
-" <button onclick='like(this)'>👍</button> " +
-"<span>0</span></p>";
+imageHTML +
+"<br><button onclick='like(this)'>👍</button> " +
+"<span>0</span> " +
+"<button onclick='supprimer(this)'>🗑️</button>" +
+"</p>";
 
 localStorage.setItem(
 "messages",
@@ -60,14 +132,29 @@ document.getElementById("resultat").innerHTML
 );
 
 document.getElementById("message").value = "";
+
+document.getElementById("photo").value = "";
+
 }
 
 function like(btn) {
 
-let span = btn.nextElementSibling;
+let span =
+btn.nextElementSibling;
 
 span.innerText =
 parseInt(span.innerText) + 1;
+
+localStorage.setItem(
+"messages",
+document.getElementById("resultat").innerHTML
+);
+
+}
+
+function supprimer(btn) {
+
+btn.parentElement.remove();
 
 localStorage.setItem(
 "messages",
