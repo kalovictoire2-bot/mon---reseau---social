@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Chat Privé</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<div class="topbar">
+
+<h2>
+💬 Messages Privés
+</h2>
+
+</div>
+
+<div id="chat" class="chat"></div>
+
+<div style="padding:10px;">
+
+<input id="message"
+placeholder="Écrire un message">
+
+<button onclick="envoyer()">
+📤 Envoyer
+</button>
+
+</div>
+
+<script>
+
+function charger(){
+
+document.getElementById("chat").innerHTML =
+
+localStorage.getItem("chat") || "";
+
+}
+
+window.onload = function(){
+
+charger();
+
+}
+
+function envoyer(){
+
+let texte =
+
+document.getElementById("message").value;
+
+if(texte === ""){
+
+return;
+
+}
+
+document.getElementById("chat").innerHTML +=
+
+"<div class='message moi'>" +
+
+texte +
+
+"</div>";
+
+localStorage.setItem(
+
+"chat",
+
+document.getElementById("chat").innerHTML
+
+);
+
+document.getElementById("message").value =
+"";
+
+}
+
+</script>
+
+</body>
+
+</html>

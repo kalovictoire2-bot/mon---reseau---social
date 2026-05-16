@@ -1,213 +1,56 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
+
 <head>
-<meta charset="UTF-8">
-<title>MonApp Chat Pro</title>
 
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<title>Accueil</title>
 
-<style>
+<link rel="stylesheet" href="style.css">
 
-body{
-margin:0;
-font-family:Arial;
-background:#1877f2;
-}
-
-#login{
-height:100vh;
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-color:white;
-}
-
-#app{
-display:none;
-background:#f0f2f5;
-min-height:100vh;
-}
-
-input,button{
-padding:10px;
-margin:5px;
-border:none;
-border-radius:20px;
-}
-
-button{cursor:pointer;font-weight:bold;}
-
-.topbar{
-background:#1877f2;
-color:white;
-padding:10px;
-display:flex;
-justify-content:space-between;
-}
-
-.box{
-background:white;
-margin:10px;
-padding:10px;
-border-radius:10px;
-}
-
-.chat{
-margin:10px;
-padding:10px;
-border-radius:10px;
-background:#e4e6eb;
-}
-
-.me{
-text-align:right;
-background:#cfe2ff;
-}
-
-</style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
-<div id="login">
-  <h2>MonApp Chat 💬</h2>
+<div class="topbar">
 
-  <input id="email" placeholder="Email">
-  <input id="password" type="password" placeholder="Mot de passe">
-
-  <button onclick="signup()">Créer compte</button>
-  <button onclick="login()">Connexion</button>
-</div>
-
-<!-- APP -->
-<div id="app">
-
-  <div class="topbar">
-    <div>MonApp Chat</div>
-    <div id="me"></div>
-  </div>
-
-  <div class="box">
-    <input id="to" placeholder="Email du destinataire">
-    <input id="msg" placeholder="Message">
-    <button onclick="sendMsg()">Envoyer</button>
-  </div>
-
-  <div id="messages"></div>
+<h2>Mon Réseau Social</h2>
 
 </div>
 
-<script>
+<div class="container">
 
-/* FIREBASE */
-const firebaseConfig = {
-  apiKey: "AIzaSyCtFyJtI6F7XIOJH5g6H5zD2TrDQCdUoDM",
-  authDomain: "mon-app-social.firebaseapp.com",
-  projectId: "mon-app-social",
-  storageBucket: "mon-app-social.appspot.com",
-  messagingSenderId: "283857943068",
-  appId: "1:283857943068:web:6d9973564a3af28b287dd9"
-};
+<h3>Bienvenue 👋</h3>
 
-firebase.initializeApp(firebaseConfig);
+<p>
+Choisis une section :
+</p>
 
-const auth = firebase.auth();
-const db = firebase.firestore();
+<a href="chat.html">
+<button>
+💬 Messages privés
+</button>
+</a>
 
-let user = null;
+<a href="profil.html">
+<button>
+👤 Profil
+</button>
+</a>
 
-/* LOGIN */
-function signup(){
-let e=document.getElementById("email").value.trim();
-let p=document.getElementById("password").value.trim();
+<a href="notifications.html">
+<button>
+🔔 Notifications
+</button>
+</a>
 
-auth.createUserWithEmailAndPassword(e,p)
-.then(u=>{
-user=u.user;
-enterApp();
-})
-.catch(e=>alert(e.message));
-}
+<a href="parametres.html">
+<button>
+⚙️ Paramètres
+</button>
+</a>
 
-function login(){
-let e=document.getElementById("email").value.trim();
-let p=document.getElementById("password").value.trim();
-
-auth.signInWithEmailAndPassword(e,p)
-.then(u=>{
-user=u.user;
-enterApp();
-})
-.catch(e=>alert(e.message));
-}
-
-/* ENTER */
-function enterApp(){
-document.getElementById("login").style.display="none";
-document.getElementById("app").style.display="block";
-
-document.getElementById("me").innerText="🟢 "+user.email;
-
-loadMessages();
-}
-
-/* CHAT ID (2 users unique) */
-function chatId(a,b){
-return [a,b].sort().join("_");
-}
-
-/* SEND MESSAGE */
-function sendMsg(){
-
-let to=document.getElementById("to").value.trim();
-let text=document.getElementById("msg").value.trim();
-
-if(!to || !text) return;
-
-db.collection("messages").add({
-from:user.email,
-to:to,
-text:text,
-time:Date.now()
-});
-
-document.getElementById("msg").value="";
-}
-
-/* LOAD MESSAGES */
-function loadMessages(){
-
-db.collection("messages")
-.orderBy("time")
-.onSnapshot(snap=>{
-
-let html="";
-
-snap.forEach(doc=>{
-let m=doc.data();
-
-if(m.from===user.email || m.to===user.email){
-
-html+=`
-<div class="chat ${m.from===user.email?'me':''}">
-<b>${m.from}</b><br>
-${m.text}
 </div>
-`;
-}
-
-});
-
-document.getElementById("messages").innerHTML=html;
-
-});
-}
-
-</script>
 
 </body>
+
 </html>
