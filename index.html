@@ -1,166 +1,297 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="fr">
 <head>
-<title>Mon Réseau Social</title>
+<meta charset="UTF-8">
+<title>MonApp Expert</title>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <style>
+
 body{
-background:#f0f2f5;
+margin:0;
 font-family:Arial;
-padding:20px;
+background:#f0f2f5;
 }
 
-h1{
-color:#1877f2;
-text-align:center;
+#login{
+height:100vh;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+background:#1877f2;
+color:white;
 }
+
+#app{display:none;}
 
 input{
-width:90%;
 padding:10px;
 margin:5px;
-border-radius:10px;
-border:1px solid gray;
+border:none;
+border-radius:20px;
+width:220px;
 }
 
 button{
-padding:10px;
+padding:10px 15px;
 border:none;
-border-radius:10px;
+border-radius:20px;
+cursor:pointer;
+font-weight:bold;
+}
+
+.topbar{
 background:#1877f2;
 color:white;
-margin-top:5px;
+padding:10px;
+display:flex;
+justify-content:space-between;
 }
 
-p{
+.page{display:none;}
+.show{display:block;}
+
+.box{
 background:white;
+margin:15px;
+padding:15px;
+border-radius:12px;
+}
+
+.friend{
+background:white;
+margin:10px 15px;
 padding:10px;
 border-radius:10px;
-box-shadow:0 0 5px gray;
+display:flex;
+justify-content:space-between;
 }
 
-img{
-margin-top:10px;
+.chat{
+background:#e4e6eb;
+margin:8px 15px;
+padding:8px;
 border-radius:10px;
-max-width:100%;
 }
-</style>
 
+.nav{
+display:flex;
+justify-content:center;
+gap:10px;
+margin:10px;
+}
+
+.nav button{
+width:55px;
+height:55px;
+border-radius:50%;
+background:white;
+border:none;
+font-size:20px;
+}
+
+.active{
+background:#1877f2;
+color:white;
+}
+
+</style>
 </head>
 
 <body>
 
-<h1>Mon Réseau Social</h1>
+<!-- LOGIN -->
+<div id="login">
+  <h2>MonApp Expert 🔐</h2>
 
-<input id="nom" placeholder="Ton nom">
+  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Mot de passe">
 
-<input id="message" placeholder="Écris un message">
+  <button onclick="signup()">Créer</button>
+  <button onclick="login()">Connexion</button>
+</div>
 
-<input type="file" id="photo">
+<!-- APP -->
+<div id="app">
 
-<button onclick="publier()">
-Publier
-</button>
+  <div class="topbar">
+    <div>MonApp Expert</div>
+    <div id="me"></div>
+  </div>
 
-<div id="resultat"></div>
+  <div class="nav">
+    <button class="active" onclick="show('friends',event)">👥</button>
+    <button onclick="show('chat',event)">💬</button>
+    <button onclick="logout()">🚪</button>
+  </div>
+
+  <!-- FRIENDS -->
+  <div id="friends" class="page show">
+
+    <div class="box">
+      <input id="friendEmail" placeholder="Email ami">
+      <button onclick="sendRequest()">Ajouter ami</button>
+    </div>
+
+    <div id="friendList"></div>
+
+  </div>
+
+  <!-- CHAT -->
+  <div id="chat" class="page">
+
+    <div class="box">
+      <input id="to" placeholder="Envoyer à (email)">
+      <input id="msg" placeholder="Message">
+      <button onclick="sendMsg()">Envoyer</button>
+    </div>
+
+    <div id="messages"></div>
+
+  </div>
+
+</div>
 
 <script>
 
-function afficherMessages() {
+/* FIREBASE */
+const firebaseConfig = {
+  apiKey: "AIzaSyCtFyJtI6F7XIOJH5g6H5zD2TrDQCdUoDM",
+  authDomain: "mon-app-social.firebaseapp.com",
+  projectId: "mon-app-social",
+  storageBucket: "mon-app-social.appspot.com",
+  messagingSenderId: "283857943068",
+  appId: "1:283857943068:web:6d9973564a3af28b287dd9"
+};
 
-document.getElementById("resultat").innerHTML =
-localStorage.getItem("messages") || "";
+firebase.initializeApp(firebaseConfig);
 
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+let user=null;
+
+/* AUTH */
+function signup(){
+let e=document.getElementById("email").value;
+let p=document.getElementById("password").value;
+
+auth.createUserWithEmailAndPassword(e,p)
+.then(u=>{user=u.user;enter();});
 }
 
-window.onload = function () {
+function login(){
+let e=document.getElementById("email").value;
+let p=document.getElementById("password").value;
 
-afficherMessages();
-
+auth.signInWithEmailAndPassword(e,p)
+.then(u=>{user=u.user;enter();});
 }
 
-function publier() {
+function enter(){
+document.getElementById("login").style.display="none";
+document.getElementById("app").style.display="block";
 
-let nom =
-document.getElementById("nom").value;
+document.getElementById("me").innerText="🟢 "+user.email;
 
-let message =
-document.getElementById("message").value;
-
-if (nom === "" || message === "") {
-
-alert("Remplis tous les champs");
-
-return;
-
+loadFriends();
+loadMessages();
 }
 
-let heure =
-new Date().toLocaleTimeString();
+/* NAV */
+function show(page,event){
 
-let texte =
-nom + " : " + message + " (" + heure + ")";
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("show"));
+document.getElementById(page).classList.add("show");
 
-let photo =
-document.getElementById("photo").files[0];
-
-let imageHTML = "";
-
-if(photo){
-
-imageHTML =
-"<br><img src='" +
-URL.createObjectURL(photo) +
-"' width='200'>";
-
+document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
+event.target.classList.add("active");
 }
 
-document.getElementById("resultat").innerHTML +=
+/* FRIEND REQUEST */
+function sendRequest(){
 
-"<p>" +
-texte +
-imageHTML +
-"<br><button onclick='like(this)'>👍</button> " +
-"<span>0</span> " +
-"<button onclick='supprimer(this)'>🗑️</button>" +
-"</p>";
+let email=document.getElementById("friendEmail").value;
 
-localStorage.setItem(
-"messages",
-document.getElementById("resultat").innerHTML
-);
+db.collection("friendRequests").add({
+from:user.email,
+to:email,
+status:"pending"
+});
 
-document.getElementById("message").value = "";
-
-document.getElementById("photo").value = "";
-
+document.getElementById("friendEmail").value="";
 }
 
-function like(btn) {
+/* LOAD FRIENDS */
+function loadFriends(){
 
-let span =
-btn.nextElementSibling;
+db.collection("friendRequests")
+.where("to","==",user.email)
+.onSnapshot(snap=>{
 
-span.innerText =
-parseInt(span.innerText) + 1;
+let html="";
 
-localStorage.setItem(
-"messages",
-document.getElementById("resultat").innerHTML
-);
+snap.forEach(doc=>{
+let r=doc.data();
 
+html+=`
+<div class="friend">
+👤 ${r.from}
+</div>
+`;
+});
+
+document.getElementById("friendList").innerHTML=html;
+
+});
 }
 
-function supprimer(btn) {
+/* CHAT PRIVÉ */
+function sendMsg(){
 
-btn.parentElement.remove();
+let to=document.getElementById("to").value;
+let text=document.getElementById("msg").value;
 
-localStorage.setItem(
-"messages",
-document.getElementById("resultat").innerHTML
-);
+db.collection("chats").add({
+from:user.email,
+to:to,
+text:text,
+time:Date.now()
+});
 
+document.getElementById("msg").value="";
+}
+
+/* LOAD CHAT */
+function loadMessages(){
+
+db.collection("chats")
+.orderBy("time")
+.onSnapshot(snap=>{
+
+let html="";
+
+snap.forEach(doc=>{
+let m=doc.data();
+
+if(m.from===user.email || m.to===user.email){
+html+=`
+<div class="chat">
+<b>${m.from}</b> ➜ <b>${m.to}</b><br>
+${m.text}
+</div>
+`;
+}
+
+});
+
+document.getElementById("messages").innerHTML=html;
+
+});
 }
 
 </script>
