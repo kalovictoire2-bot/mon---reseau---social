@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Paramètres</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<div class="topbar">
+
+<h2>
+⚙️ Paramètres
+</h2>
+
+</div>
+
+<div class="container">
+
+<button onclick="modeSombre()">
+🌙 Mode sombre
+</button>
+
+<button onclick="viderChat()">
+🗑️ Supprimer les messages
+</button>
+
+<a href="index.html">
+
+<button>
+🏠 Retour accueil
+</button>
+
+</a>
+
+</div>
+
+<script>
+
+function modeSombre(){
+
+document.body.style.background =
+"black";
+
+document.body.style.color =
+"white";
+
+}
+
+function viderChat(){
+
+localStorage.removeItem("chat");
+
+alert("Messages supprimés");
+
+}
+
+</script>
+
+</body>
+
+</html>

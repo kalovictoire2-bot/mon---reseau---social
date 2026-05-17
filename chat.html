@@ -7,46 +7,266 @@
 
 <link rel="stylesheet" href="style.css">
 
+<style>
+
+body{
+background:#ece5dd;
+margin:0;
+font-family:Arial;
+}
+
+/* TOPBAR */
+
+.topchat{
+background:#075e54;
+color:white;
+padding:15px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+position:sticky;
+top:0;
+}
+
+.icons button{
+width:auto;
+padding:8px;
+margin-left:5px;
+background:none;
+font-size:20px;
+border:none;
+color:white;
+}
+
+/* CHAT */
+
+.chat{
+padding:10px;
+padding-bottom:100px;
+display:flex;
+flex-direction:column;
+}
+
+/* MESSAGES */
+
+.message{
+padding:10px;
+margin-top:10px;
+border-radius:10px;
+max-width:75%;
+word-wrap:break-word;
+}
+
+/* MOI */
+
+.moi{
+background:#dcf8c6;
+align-self:flex-end;
+}
+
+/* AUTRE */
+
+.autre{
+background:white;
+align-self:flex-start;
+}
+
+/* BAS */
+
+.bottom{
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+background:white;
+padding:10px;
+display:flex;
+gap:5px;
+}
+
+.bottom input{
+flex:1;
+padding:10px;
+border-radius:20px;
+border:1px solid gray;
+}
+
+/* BOUTONS */
+
+.bottom button{
+padding:10px;
+border:none;
+border-radius:50%;
+background:#075e54;
+color:white;
+}
+
+/* IMAGES */
+
+.message img{
+width:100%;
+border-radius:10px;
+margin-top:5px;
+}
+
+/* PARAMETRES */
+
+#parametres{
+display:none;
+position:fixed;
+top:0;
+left:0;
+right:0;
+bottom:0;
+background:rgba(0,0,0,0.5);
+padding:20px;
+}
+
+.param-box{
+background:white;
+padding:20px;
+border-radius:20px;
+margin-top:50px;
+}
+
+.param-box button{
+width:100%;
+margin-top:10px;
+padding:12px;
+border:none;
+border-radius:10px;
+background:#128c7e;
+color:white;
+font-size:16px;
+}
+
+/* MODE SOMBRE */
+
+.dark{
+background:black;
+color:white;
+}
+
+.dark .autre{
+background:#222;
+color:white;
+}
+
+.dark .bottom{
+background:#111;
+}
+
+.dark input{
+background:#333;
+color:white;
+border:none;
+}
+
+.dark .param-box{
+background:#222;
+color:white;
+}
+
+</style>
+
 </head>
 
 <body>
 
-<div class="topbar">
+<!-- TOPBAR -->
 
-<h2>
-💬 Messages Privés
-</h2>
+<div class="topchat">
+
+<div>
+
+<b>💬 Discussion Privée</b>
 
 </div>
 
-<div id="chat" class="chat"></div>
+<div class="icons">
 
-<div style="padding:10px;">
+<button onclick="appelVocal()">
+📞
+</button>
+
+<button onclick="appelVideo()">
+🎥
+</button>
+
+<button onclick="ouvrirParametres()">
+⚙️
+</button>
+
+</div>
+
+</div>
+
+<!-- CHAT -->
+
+<div id="chat" class="chat">
+
+<div class="message autre">
+Salut 👋
+</div>
+
+<div class="message moi">
+Bonjour 🔥
+</div>
+
+</div>
+
+<!-- BAS -->
+
+<div class="bottom">
 
 <input id="message"
 placeholder="Écrire un message">
 
-<button onclick="envoyer()">
-📤 Envoyer
+<input type="file"
+id="photo"
+style="display:none;">
+
+<button onclick="ouvrirPhoto()">
+📸
 </button>
+
+<button onclick="messageVocal()">
+🎤
+</button>
+
+<button onclick="envoyer()">
+📤
+</button>
+
+</div>
+
+<!-- PARAMETRES -->
+
+<div id="parametres">
+
+<div class="param-box">
+
+<h2>⚙️ Paramètres</h2>
+
+<button onclick="modeSombre()">
+🌙 Mode sombre
+</button>
+
+<button onclick="viderChat()">
+🗑️ Supprimer discussion
+</button>
+
+<button onclick="fermerParametres()">
+❌ Fermer
+</button>
+
+</div>
 
 </div>
 
 <script>
 
-function charger(){
-
-document.getElementById("chat").innerHTML =
-
-localStorage.getItem("chat") || "";
-
-}
-
-window.onload = function(){
-
-charger();
-
-}
+/* ENVOYER */
 
 function envoyer(){
 
@@ -68,16 +288,111 @@ texte +
 
 "</div>";
 
-localStorage.setItem(
-
-"chat",
-
-document.getElementById("chat").innerHTML
-
-);
-
 document.getElementById("message").value =
 "";
+
+descendre();
+
+}
+
+/* PHOTO */
+
+function ouvrirPhoto(){
+
+document.getElementById("photo").click();
+
+}
+
+document.getElementById("photo")
+.addEventListener("change", function(){
+
+let fichier = this.files[0];
+
+if(!fichier){
+
+return;
+
+}
+
+let image =
+URL.createObjectURL(fichier);
+
+document.getElementById("chat").innerHTML +=
+
+"<div class='message moi'>" +
+
+"<img src='" + image + "'>" +
+
+"</div>";
+
+descendre();
+
+});
+
+/* MESSAGE VOCAL */
+
+function messageVocal(){
+
+alert("🎤 Message vocal bientôt disponible");
+
+}
+
+/* APPELS */
+
+function appelVocal(){
+
+alert("📞 Appel vocal...");
+
+}
+
+function appelVideo(){
+
+alert("🎥 Appel vidéo...");
+
+}
+
+/* PARAMETRES */
+
+function ouvrirParametres(){
+
+document.getElementById("parametres").style.display =
+"block";
+
+}
+
+function fermerParametres(){
+
+document.getElementById("parametres").style.display =
+"none";
+
+}
+
+/* MODE SOMBRE */
+
+function modeSombre(){
+
+document.body.classList.toggle("dark");
+
+}
+
+/* SUPPRIMER CHAT */
+
+function viderChat(){
+
+document.getElementById("chat").innerHTML =
+"";
+
+}
+
+/* DESCENDRE */
+
+function descendre(){
+
+let chat =
+document.getElementById("chat");
+
+chat.scrollTop =
+chat.scrollHeight;
 
 }
 
