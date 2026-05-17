@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Connexion</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:#ece5dd;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.box{
+background:white;
+padding:30px;
+border-radius:20px;
+width:90%;
+max-width:350px;
+box-shadow:0 0 10px gray;
+}
+
+h2{
+text-align:center;
+color:#075e54;
+}
+
+input{
+width:100%;
+padding:12px;
+margin-top:10px;
+border-radius:10px;
+border:1px solid gray;
+}
+
+button{
+width:100%;
+padding:15px;
+margin-top:15px;
+border:none;
+border-radius:10px;
+background:#128c7e;
+color:white;
+font-size:16px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="box">
+
+<h2>
+🔐 Connexion
+</h2>
+
+<input id="email"
+placeholder="Email">
+
+<input id="password"
+type="password"
+placeholder="Mot de passe">
+
+<button onclick="connexion()">
+Se connecter
+</button>
+
+<button onclick="inscription()">
+Créer un compte
+</button>
+
+</div>
+
+<script>
+
+function inscription(){
+
+let email =
+document.getElementById("email").value;
+
+let password =
+document.getElementById("password").value;
+
+if(email === "" || password === ""){
+
+alert("Remplis tous les champs");
+
+return;
+
+}
+
+localStorage.setItem("email", email);
+
+localStorage.setItem("password", password);
+
+alert("Compte créé 🔥");
+
+}
+
+function connexion(){
+
+let email =
+document.getElementById("email").value;
+
+let password =
+document.getElementById("password").value;
+
+let savedEmail =
+localStorage.getItem("email");
+
+let savedPassword =
+localStorage.getItem("password");
+
+if(email === savedEmail &&
+password === savedPassword){
+
+alert("Connexion réussie 🔥");
+
+window.open("index.html");
+
+}else{
+
+alert("Email ou mot de passe incorrect");
+
+}
+
+}
+
+</script>
+
+</body>
+
+</html>

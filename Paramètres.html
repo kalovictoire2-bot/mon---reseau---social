@@ -5,11 +5,74 @@
 
 <title>Paramètres</title>
 
-<link rel="stylesheet" href="style.css">
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:#ece5dd;
+}
+
+.topbar{
+background:#075e54;
+color:white;
+padding:15px;
+text-align:center;
+}
+
+.container{
+padding:20px;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:15px;
+margin-top:15px;
+box-shadow:0 0 5px gray;
+}
+
+button{
+width:100%;
+padding:15px;
+margin-top:10px;
+border:none;
+border-radius:10px;
+background:#128c7e;
+color:white;
+font-size:16px;
+}
+
+.red{
+background:red;
+}
+
+.popup{
+display:none;
+position:fixed;
+top:0;
+left:0;
+right:0;
+bottom:0;
+background:rgba(0,0,0,0.5);
+padding:20px;
+overflow:auto;
+}
+
+.popup-box{
+background:white;
+padding:20px;
+border-radius:20px;
+margin-top:50px;
+}
+
+</style>
 
 </head>
 
 <body>
+
+<!-- TOPBAR -->
 
 <div class="topbar">
 
@@ -21,13 +84,114 @@
 
 <div class="container">
 
-<button onclick="modeSombre()">
-🌙 Mode sombre
+<!-- COMPTE -->
+
+<div class="card">
+
+<h3>👤 Compte</h3>
+
+<button onclick="ouvrir('compte')">
+Voir paramètres compte
 </button>
 
-<button onclick="viderChat()">
-🗑️ Supprimer les messages
+</div>
+
+<!-- CONFIDENTIALITE -->
+
+<div class="card">
+
+<h3>🔒 Confidentialité</h3>
+
+<button onclick="ouvrir('confidentialite')">
+Voir confidentialité
 </button>
+
+</div>
+
+<!-- NOTIFICATIONS -->
+
+<div class="card">
+
+<h3>🔔 Notifications</h3>
+
+<button onclick="ouvrir('notifications')">
+Voir notifications
+</button>
+
+</div>
+
+<!-- DISCUSSIONS -->
+
+<div class="card">
+
+<h3>💬 Discussions</h3>
+
+<button onclick="ouvrir('discussion')">
+Voir discussions
+</button>
+
+</div>
+
+<!-- APPARENCE -->
+
+<div class="card">
+
+<h3>🎨 Apparence</h3>
+
+<button onclick="ouvrir('apparence')">
+Voir apparence
+</button>
+
+</div>
+
+<!-- APPELS -->
+
+<div class="card">
+
+<h3>📞 Appels</h3>
+
+<button onclick="ouvrir('appels')">
+Voir appels
+</button>
+
+</div>
+
+<!-- SECURITE -->
+
+<div class="card">
+
+<h3>🛡️ Sécurité</h3>
+
+<button onclick="ouvrir('securite')">
+Voir sécurité
+</button>
+
+</div>
+
+<!-- AIDE -->
+
+<div class="card">
+
+<h3>❓ Aide</h3>
+
+<button onclick="ouvrir('aide')">
+Voir aide
+</button>
+
+</div>
+
+<!-- DECONNEXION -->
+
+<div class="card">
+
+<h3>🚪 Session</h3>
+
+<button class="red"
+onclick="deconnexion()">
+Déconnexion
+</button>
+
+</div>
 
 <a href="index.html">
 
@@ -39,7 +203,197 @@
 
 </div>
 
+<!-- POPUP -->
+
+<div id="popup" class="popup">
+
+<div class="popup-box">
+
+<h2 id="titre"></h2>
+
+<div id="contenu"></div>
+
+<button onclick="fermer()">
+Fermer
+</button>
+
+</div>
+
+</div>
+
 <script>
+
+function ouvrir(type){
+
+document.getElementById("popup").style.display =
+"block";
+
+let titre =
+document.getElementById("titre");
+
+let contenu =
+document.getElementById("contenu");
+
+/* COMPTE */
+
+if(type === "compte"){
+
+titre.innerText =
+"👤 Compte";
+
+contenu.innerHTML =
+
+`
+<button>Changer photo profil</button>
+<button>Changer nom</button>
+<button>Changer mot de passe</button>
+<button>Changer numéro</button>
+`;
+
+}
+
+/* CONFIDENTIALITE */
+
+if(type === "confidentialite"){
+
+titre.innerText =
+"🔒 Confidentialité";
+
+contenu.innerHTML =
+
+`
+<button>Compte privé</button>
+<button>Bloquer utilisateur</button>
+<button>Masquer dernière connexion</button>
+<button>Qui peut m'écrire</button>
+`;
+
+}
+
+/* NOTIFICATIONS */
+
+if(type === "notifications"){
+
+titre.innerText =
+"🔔 Notifications";
+
+contenu.innerHTML =
+
+`
+<button>Activer notifications</button>
+<button>Mode silencieux</button>
+<button>Son notifications</button>
+`;
+
+}
+
+/* DISCUSSION */
+
+if(type === "discussion"){
+
+titre.innerText =
+"💬 Discussions";
+
+contenu.innerHTML =
+
+`
+<button onclick="viderChat()">
+🗑️ Supprimer messages
+</button>
+
+<button>Sauvegarde discussions</button>
+
+<button>Fond discussion</button>
+`;
+
+}
+
+/* APPARENCE */
+
+if(type === "apparence"){
+
+titre.innerText =
+"🎨 Apparence";
+
+contenu.innerHTML =
+
+`
+<button onclick="modeSombre()">
+🌙 Mode sombre
+</button>
+
+<button>Changer thème</button>
+
+<button>Taille texte</button>
+`;
+
+}
+
+/* APPELS */
+
+if(type === "appels"){
+
+titre.innerText =
+"📞 Appels";
+
+contenu.innerHTML =
+
+`
+<button>Sonnerie appels</button>
+
+<button>Qualité vidéo</button>
+
+<button>Réduire données mobiles</button>
+`;
+
+}
+
+/* SECURITE */
+
+if(type === "securite"){
+
+titre.innerText =
+"🛡️ Sécurité";
+
+contenu.innerHTML =
+
+`
+<button>Vérification 2 étapes</button>
+
+<button>Empreinte digitale</button>
+
+<button>Historique connexions</button>
+`;
+
+}
+
+/* AIDE */
+
+if(type === "aide"){
+
+titre.innerText =
+"❓ Aide";
+
+contenu.innerHTML =
+
+`
+<button>Centre d’aide</button>
+
+<button>Signaler problème</button>
+
+<button>Conditions utilisation</button>
+`;
+
+}
+
+}
+
+function fermer(){
+
+document.getElementById("popup").style.display =
+"none";
+
+}
 
 function modeSombre(){
 
@@ -56,6 +410,15 @@ function viderChat(){
 localStorage.removeItem("chat");
 
 alert("Messages supprimés");
+
+}
+
+function deconnexion(){
+
+alert("Déconnexion réussie");
+
+window.location.href =
+"index.html";
 
 }
 
